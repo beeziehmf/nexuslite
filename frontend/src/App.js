@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { Header, SearchBar, IntegrationCategories, AIResponse, Footer, HeroSection } from './components';
+import { 
+  Header, 
+  Home, 
+  Marketplace, 
+  WorkflowBuilder, 
+  AnalyticsDashboard, 
+  EnhancedChat, 
+  Footer 
+} from './components';
 
 // Mock data for professional AI responses
 const mockResponses = {
@@ -105,6 +113,7 @@ const mockResponses = {
 };
 
 function App() {
+  const [activeSection, setActiveSection] = useState('home');
   const [query, setQuery] = useState('');
   const [response, setResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -138,55 +147,50 @@ function App() {
     setIsLoading(false);
   };
 
-  const handleCategoryClick = (category) => {
-    const categoryResponses = {
-      'CRM': mockResponses.crm,
-      'E-commerce': mockResponses['e-commerce'],
-      'Marketing': mockResponses.marketing,
-      'Finance': mockResponses.finance,
-      'Productivité': mockResponses['productivité'],
-      'Analytics': mockResponses.analytics
-    };
-    
-    const categoryQuery = {
-      'CRM': 'Aide-moi avec mon CRM',
-      'E-commerce': 'Automatiser ma boutique en ligne',
-      'Marketing': 'Optimiser mes campagnes marketing',
-      'Finance': 'Gérer ma comptabilité',
-      'Productivité': 'Améliorer ma productivité',
-      'Analytics': 'Analyser mes données'
-    };
-    
-    setQuery(categoryQuery[category]);
-    setResponse(categoryResponses[category] || mockResponses.default);
+  const renderActiveSection = () => {
+    switch (activeSection) {
+      case 'home':
+        return (
+          <Home
+            onSearch={handleSearch}
+            query={query}
+            setQuery={setQuery}
+            isLoading={isLoading}
+            response={response}
+          />
+        );
+      case 'marketplace':
+        return <Marketplace />;
+      case 'workflows':
+        return <WorkflowBuilder />;
+      case 'analytics':
+        return <AnalyticsDashboard />;
+      case 'chat':
+        return <EnhancedChat />;
+      default:
+        return (
+          <Home
+            onSearch={handleSearch}
+            query={query}
+            setQuery={setQuery}
+            isLoading={isLoading}
+            response={response}
+          />
+        );
+    }
   };
 
   return (
     <div className="min-h-screen bg-black">
-      <Header />
+      <Header 
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      />
       
       <main className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-12 md:py-20">
-            <HeroSection />
-            
-            <div className="flex flex-col items-center">
-              <SearchBar 
-                onSearch={handleSearch}
-                query={query}
-                setQuery={setQuery}
-                isLoading={isLoading}
-              />
-              
-              <IntegrationCategories 
-                onCategoryClick={handleCategoryClick}
-              />
-              
-              <AIResponse 
-                response={response} 
-                isLoading={isLoading}
-              />
-            </div>
+            {renderActiveSection()}
           </div>
         </div>
       </main>
