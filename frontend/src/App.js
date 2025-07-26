@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { 
-  Header, 
-  Home, 
+  PublicHeader,
+  PrivateHeader, 
+  LandingPage,
+  LoginModal,
+  Dashboard,
   Marketplace, 
   WorkflowBuilder, 
   AnalyticsDashboard, 
@@ -13,145 +16,122 @@ import {
 // Mock data for professional AI responses
 const mockResponses = {
   default: {
-    answer: "Je suis Nexus, votre assistant IA spécialisé dans l'automatisation des processus métier. Je peux vous aider à connecter vos outils, créer des workflows intelligents et optimiser votre productivité avec plus de 200 intégrations professionnelles. Comment puis-je automatiser vos tâches aujourd'hui ?",
+    answer: "Je suis Nexus, votre orchestrateur IA spécialisé dans l'automatisation des processus métier. Je peux analyser vos besoins et orchestrer automatiquement une série de tâches complexes en sélectionnant les meilleurs outils et processus. Comment puis-je vous aider aujourd'hui ?",
     integrations: [
-      { name: "Slack", icon: "💬", description: "Automatisation des notifications et workflows" },
-      { name: "Salesforce", icon: "☁️", description: "Synchronisation CRM et leads" },
-      { name: "Google Workspace", icon: "📊", description: "Gestion documentaire et calendrier" },
-      { name: "Zapier", icon: "⚡", description: "Connecteur universel d'applications" }
+      { name: "Slack", icon: "💬", description: "Orchestration des notifications et workflows" },
+      { name: "Salesforce", icon: "☁️", description: "Synchronisation CRM et orchestration des données" },
+      { name: "Google Workspace", icon: "📊", description: "Gestion documentaire et orchestration calendrier" },
+      { name: "Zapier", icon: "⚡", description: "Connecteur universel pour orchestration" }
     ],
     actions: [
-      { icon: "🔗", title: "Créer une intégration", description: "Connecter deux ou plusieurs applications" },
-      { icon: "⚙️", title: "Configurer un workflow", description: "Automatiser une séquence de tâches" },
-      { icon: "📋", title: "Voir les templates", description: "Utiliser des modèles prédéfinis" }
+      { icon: "🔗", title: "Orchestrer une intégration", description: "Analyser et connecter automatiquement vos outils" },
+      { icon: "⚙️", title: "Lancer un workflow", description: "Orchestrer une séquence de tâches complexes" },
+      { icon: "📋", title: "Optimiser un processus", description: "Analyser et améliorer vos workflows existants" }
     ]
   },
   crm: {
-    answer: "Les systèmes CRM sont essentiels pour gérer vos relations clients. Je peux vous aider à automatiser la synchronisation des données, créer des workflows de nurturing et optimiser votre tunnel de vente avec des intégrations intelligentes.",
+    answer: "Je vais orchestrer une analyse complète de votre CRM. Nexus va automatiquement analyser vos données, identifier les opportunités d'optimisation et exécuter les actions nécessaires avec les meilleurs outils disponibles.",
     integrations: [
-      { name: "Salesforce", icon: "☁️", description: "CRM leader mondial avec APIs complètes" },
-      { name: "HubSpot", icon: "🎯", description: "Marketing automation et CRM intégré" },
-      { name: "Pipedrive", icon: "📈", description: "CRM visuel orienté pipeline" },
-      { name: "Zoho CRM", icon: "📊", description: "Suite CRM complète et abordable" }
+      { name: "Salesforce", icon: "☁️", description: "Orchestration CRM avancée avec APIs complètes" },
+      { name: "HubSpot", icon: "🎯", description: "Orchestration marketing automation et CRM" },
+      { name: "Pipedrive", icon: "📈", description: "Orchestration pipeline visuel et processus" },
+      { name: "Zoho CRM", icon: "📊", description: "Orchestration suite CRM complète" }
     ],
     actions: [
-      { icon: "🔄", title: "Synchroniser les contacts", description: "Automatiser la mise à jour des données clients" },
-      { icon: "📧", title: "Workflow email", description: "Créer des séquences automatisées" },
-      { icon: "📊", title: "Rapports automatiques", description: "Générer des dashboards en temps réel" }
-    ]
-  },
-  'e-commerce': {
-    answer: "L'e-commerce nécessite une automatisation précise pour optimiser les ventes. Je peux connecter votre boutique en ligne avec vos outils de gestion, automatiser les commandes et synchroniser les inventaires en temps réel.",
-    integrations: [
-      { name: "Shopify", icon: "🛍️", description: "Plateforme e-commerce complète" },
-      { name: "WooCommerce", icon: "🛒", description: "Solution WordPress flexible" },
-      { name: "Magento", icon: "🏪", description: "Plateforme enterprise robuste" },
-      { name: "BigCommerce", icon: "💳", description: "Solution cloud scalable" }
-    ],
-    actions: [
-      { icon: "📦", title: "Gestion des stocks", description: "Automatiser la synchronisation d'inventaire" },
-      { icon: "💳", title: "Processus de paiement", description: "Optimiser le tunnel de conversion" },
-      { icon: "📈", title: "Analytics ventes", description: "Tracker les performances en temps réel" }
+      { icon: "🔄", title: "Orchestrer la synchronisation", description: "Automatiser la mise à jour des données clients" },
+      { icon: "📧", title: "Orchestrer les campagnes", description: "Lancer des séquences marketing automatisées" },
+      { icon: "📊", title: "Orchestrer l'analyse", description: "Générer des insights et rapports automatiques" }
     ]
   },
   marketing: {
-    answer: "Le marketing automation vous permet de nurture vos prospects efficacement. Je peux créer des workflows multi-canaux, automatiser vos campagnes et optimiser votre ROI avec des intégrations intelligentes.",
+    answer: "Je vais orchestrer une campagne marketing complète. Nexus analysera votre audience, sélectionnera les meilleurs canaux, créera le contenu optimisé et lancera automatiquement votre campagne multi-canal.",
     integrations: [
-      { name: "Mailchimp", icon: "📧", description: "Email marketing et automation" },
-      { name: "Google Ads", icon: "🎯", description: "Publicité payante et tracking" },
-      { name: "Facebook Ads", icon: "📱", description: "Social media advertising" },
-      { name: "ActiveCampaign", icon: "⚡", description: "Marketing automation avancé" }
+      { name: "Mailchimp", icon: "📧", description: "Orchestration email marketing avancée" },
+      { name: "Google Ads", icon: "🎯", description: "Orchestration publicité payante intelligente" },
+      { name: "Facebook Ads", icon: "📱", description: "Orchestration social media advertising" },
+      { name: "ActiveCampaign", icon: "⚡", description: "Orchestration marketing automation" }
     ],
     actions: [
-      { icon: "📧", title: "Campagnes email", description: "Automatiser les séquences de nurturing" },
-      { icon: "📊", title: "Lead scoring", description: "Qualifier automatiquement les prospects" },
-      { icon: "🎯", title: "Retargeting", description: "Créer des audiences personnalisées" }
-    ]
-  },
-  finance: {
-    answer: "La gestion financière automatisée améliore votre cash-flow et réduit les erreurs. Je peux connecter vos systèmes comptables, automatiser la facturation et créer des rapports financiers en temps réel.",
-    integrations: [
-      { name: "QuickBooks", icon: "📊", description: "Comptabilité professionnelle" },
-      { name: "Stripe", icon: "💳", description: "Paiements en ligne sécurisés" },
-      { name: "PayPal", icon: "💰", description: "Solution de paiement globale" },
-      { name: "Xero", icon: "📈", description: "Comptabilité cloud moderne" }
-    ],
-    actions: [
-      { icon: "🧾", title: "Facturation automatique", description: "Générer et envoyer les factures" },
-      { icon: "💰", title: "Rapprochement bancaire", description: "Synchroniser les transactions" },
-      { icon: "📊", title: "Reporting financier", description: "Dashboards en temps réel" }
-    ]
-  },
-  'productivité': {
-    answer: "L'automatisation de la productivité libère du temps pour les tâches à valeur ajoutée. Je peux optimiser vos workflows, synchroniser vos outils de communication et créer des processus intelligents.",
-    integrations: [
-      { name: "Slack", icon: "💬", description: "Communication d'équipe centralisée" },
-      { name: "Notion", icon: "📝", description: "Workspace all-in-one" },
-      { name: "Trello", icon: "📋", description: "Gestion de projets visuels" },
-      { name: "Asana", icon: "✅", description: "Collaboration d'équipe avancée" }
-    ],
-    actions: [
-      { icon: "⚡", title: "Automatiser les tâches", description: "Créer des workflows répétitifs" },
-      { icon: "📅", title: "Synchroniser les calendriers", description: "Optimiser la planification" },
-      { icon: "📊", title: "Rapports d'activité", description: "Tracker la productivité d'équipe" }
-    ]
-  },
-  analytics: {
-    answer: "L'analyse de données automatisée vous donne des insights exploitables en temps réel. Je peux connecter vos sources de données, créer des dashboards intelligents et automatiser vos rapports.",
-    integrations: [
-      { name: "Google Analytics", icon: "📊", description: "Analytics web complet" },
-      { name: "Mixpanel", icon: "📈", description: "Product analytics avancé" },
-      { name: "Tableau", icon: "📋", description: "Visualisation de données" },
-      { name: "Power BI", icon: "⚡", description: "Business intelligence Microsoft" }
-    ],
-    actions: [
-      { icon: "📊", title: "Dashboards automatiques", description: "Créer des rapports en temps réel" },
-      { icon: "🔍", title: "Analyse prédictive", description: "Identifier les tendances futures" },
-      { icon: "📧", title: "Alertes intelligentes", description: "Notifications sur seuils critiques" }
+      { icon: "📧", title: "Orchestrer les campagnes", description: "Automatiser les séquences de nurturing" },
+      { icon: "📊", title: "Orchestrer le scoring", description: "Qualifier automatiquement les prospects" },
+      { icon: "🎯", title: "Orchestrer le retargeting", description: "Créer des audiences personnalisées" }
     ]
   }
 };
 
 function App() {
-  const [activeSection, setActiveSection] = useState('home');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [activeSection, setActiveSection] = useState('dashboard');
   const [query, setQuery] = useState('');
   const [response, setResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState(null);
+
+  // Check authentication on app load
+  useEffect(() => {
+    const savedAuth = localStorage.getItem('nexus_auth');
+    if (savedAuth) {
+      const authData = JSON.parse(savedAuth);
+      setIsAuthenticated(true);
+      setUser(authData.user);
+    }
+  }, []);
+
+  const handleLogin = (credentials) => {
+    // Simulate login process
+    const userData = {
+      name: credentials.name || 'Utilisateur',
+      email: credentials.email || 'user@example.com',
+      company: credentials.company || 'Mon Entreprise',
+      plan: 'Pro'
+    };
+    
+    setUser(userData);
+    setIsAuthenticated(true);
+    setShowLoginModal(false);
+    setActiveSection('dashboard');
+    
+    // Save to localStorage
+    localStorage.setItem('nexus_auth', JSON.stringify({
+      user: userData,
+      timestamp: Date.now()
+    }));
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+    setActiveSection('dashboard');
+    localStorage.removeItem('nexus_auth');
+  };
 
   const handleSearch = async (searchQuery) => {
     setIsLoading(true);
     setResponse(null);
     
-    // Simulate AI processing with realistic delay
+    // Simulate AI processing
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Generate response based on query
     const lowerQuery = searchQuery.toLowerCase();
     let selectedResponse = mockResponses.default;
     
     if (lowerQuery.includes('crm') || lowerQuery.includes('client') || lowerQuery.includes('vente')) {
       selectedResponse = mockResponses.crm;
-    } else if (lowerQuery.includes('e-commerce') || lowerQuery.includes('boutique') || lowerQuery.includes('vente en ligne')) {
-      selectedResponse = mockResponses['e-commerce'];
     } else if (lowerQuery.includes('marketing') || lowerQuery.includes('campagne') || lowerQuery.includes('publicité')) {
       selectedResponse = mockResponses.marketing;
-    } else if (lowerQuery.includes('finance') || lowerQuery.includes('comptabilité') || lowerQuery.includes('facturation')) {
-      selectedResponse = mockResponses.finance;
-    } else if (lowerQuery.includes('productivité') || lowerQuery.includes('tâche') || lowerQuery.includes('workflow')) {
-      selectedResponse = mockResponses['productivité'];
-    } else if (lowerQuery.includes('analytics') || lowerQuery.includes('données') || lowerQuery.includes('rapport')) {
-      selectedResponse = mockResponses.analytics;
     }
     
     setResponse(selectedResponse);
     setIsLoading(false);
   };
 
-  const renderActiveSection = () => {
+  const renderAuthenticatedContent = () => {
     switch (activeSection) {
-      case 'home':
+      case 'dashboard':
         return (
-          <Home
+          <Dashboard
+            user={user}
             onSearch={handleSearch}
             query={query}
             setQuery={setQuery}
@@ -169,7 +149,8 @@ function App() {
         return <EnhancedChat />;
       default:
         return (
-          <Home
+          <Dashboard
+            user={user}
             onSearch={handleSearch}
             query={query}
             setQuery={setQuery}
@@ -182,20 +163,38 @@ function App() {
 
   return (
     <div className="min-h-screen bg-black">
-      <Header 
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-      />
-      
-      <main className="pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-12 md:py-20">
-            {renderActiveSection()}
-          </div>
-        </div>
-      </main>
+      {!isAuthenticated ? (
+        <>
+          <PublicHeader onLogin={() => setShowLoginModal(true)} />
+          <LandingPage onLogin={() => setShowLoginModal(true)} />
+        </>
+      ) : (
+        <>
+          <PrivateHeader 
+            user={user}
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+            onLogout={handleLogout}
+          />
+          <main className="pt-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="py-8">
+                {renderAuthenticatedContent()}
+              </div>
+            </div>
+          </main>
+        </>
+      )}
       
       <Footer />
+      
+      {/* Login Modal */}
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onLogin={handleLogin}
+        />
+      )}
     </div>
   );
 }
