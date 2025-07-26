@@ -2,15 +2,20 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { 
   PublicHeader,
-  PrivateHeader, 
+  PrivateHeader,
+  Sidebar,
   LandingPage,
   LoginModal,
   Dashboard,
   Marketplace, 
-  WorkflowBuilder, 
+  WorkflowBuilder,
+  CreatorHub,
   AnalyticsDashboard, 
-  EnhancedChat, 
-  Footer 
+  ChatGPTInterface,
+  SettingsPanel,
+  AINews,
+  TeamManagement,
+  SaaSFooter
 } from './components';
 
 // Mock data for professional AI responses
@@ -63,6 +68,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [query, setQuery] = useState('');
   const [response, setResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,7 +90,10 @@ function App() {
       name: credentials.name || 'Utilisateur',
       email: credentials.email || 'user@example.com',
       company: credentials.company || 'Mon Entreprise',
-      plan: 'Pro'
+      plan: 'Enterprise',
+      role: 'Admin',
+      team: 'Équipe Marketing',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face&auto=format'
     };
     
     setUser(userData);
@@ -143,10 +152,18 @@ function App() {
         return <Marketplace />;
       case 'workflows':
         return <WorkflowBuilder />;
+      case 'creator-hub':
+        return <CreatorHub />;
       case 'analytics':
         return <AnalyticsDashboard />;
       case 'chat':
-        return <EnhancedChat />;
+        return <ChatGPTInterface />;
+      case 'settings':
+        return <SettingsPanel user={user} />;
+      case 'ai-news':
+        return <AINews />;
+      case 'team':
+        return <TeamManagement user={user} />;
       default:
         return (
           <Dashboard
@@ -161,40 +178,51 @@ function App() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-black">
-      {!isAuthenticated ? (
-        <>
-          <PublicHeader onLogin={() => setShowLoginModal(true)} />
-          <LandingPage onLogin={() => setShowLoginModal(true)} />
-        </>
-      ) : (
-        <>
-          <PrivateHeader 
-            user={user}
-            activeSection={activeSection}
-            setActiveSection={setActiveSection}
-            onLogout={handleLogout}
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-black">
+        <PublicHeader onLogin={() => setShowLoginModal(true)} />
+        <LandingPage onLogin={() => setShowLoginModal(true)} />
+        <SaaSFooter />
+        
+        {showLoginModal && (
+          <LoginModal
+            onClose={() => setShowLoginModal(false)}
+            onLogin={handleLogin}
           />
-          <main className="pt-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="py-8">
-                {renderAuthenticatedContent()}
-              </div>
-            </div>
-          </main>
-        </>
-      )}
-      
-      <Footer />
-      
-      {/* Login Modal */}
-      {showLoginModal && (
-        <LoginModal
-          onClose={() => setShowLoginModal(false)}
-          onLogin={handleLogin}
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black flex">
+      {/* Sidebar */}
+      <Sidebar
+        user={user}
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+      />
+
+      {/* Main Content */}
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        <PrivateHeader 
+          user={user}
+          onLogout={handleLogout}
+          sidebarCollapsed={sidebarCollapsed}
+          setSidebarCollapsed={setSidebarCollapsed}
         />
-      )}
+        
+        <main className="flex-1 pt-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-8">
+              {renderAuthenticatedContent()}
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
