@@ -1102,7 +1102,529 @@ export const Home = ({ onSearch, query, setQuery, isLoading, response }) => {
   );
 };
 
-// Keep other components (Marketplace, WorkflowBuilder, AIResponse, Footer) unchanged for now
-// but they can be updated with React icons later if needed
+// Marketplace Component (keep existing)
+export const Marketplace = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedIntegration, setSelectedIntegration] = useState(null);
 
-export { Marketplace, WorkflowBuilder, AIResponse, Footer } from './components';
+  const categories = [
+    { id: 'all', name: 'Toutes', count: 200 },
+    { id: 'crm', name: 'CRM', count: 45 },
+    { id: 'marketing', name: 'Marketing', count: 38 },
+    { id: 'ecommerce', name: 'E-commerce', count: 32 },
+    { id: 'finance', name: 'Finance', count: 28 },
+    { id: 'productivity', name: 'Productivité', count: 35 },
+    { id: 'analytics', name: 'Analytics', count: 22 }
+  ];
+
+  const integrations = [
+    { id: 1, name: 'Salesforce', category: 'crm', icon: '☁️', rating: 4.8, installs: '50K+', description: 'CRM leader mondial avec APIs complètes et intégrations avancées', features: ['Lead Management', 'Pipeline Automation', 'Custom Objects', 'Advanced Analytics'], pricing: 'Freemium' },
+    { id: 2, name: 'HubSpot', category: 'crm', icon: '🎯', rating: 4.7, installs: '35K+', description: 'Marketing automation et CRM intégré pour PME', features: ['Email Marketing', 'Contact Management', 'Sales Pipeline', 'Landing Pages'], pricing: 'Gratuit' },
+    { id: 3, name: 'Shopify', category: 'ecommerce', icon: '🛍️', rating: 4.9, installs: '100K+', description: 'Plateforme e-commerce complète avec app store', features: ['Store Management', 'Inventory Sync', 'Order Processing', 'Payment Gateway'], pricing: 'Payant' },
+    { id: 4, name: 'Stripe', category: 'finance', icon: '💳', rating: 4.8, installs: '75K+', description: 'Paiements en ligne sécurisés et API flexibles', features: ['Payment Processing', 'Subscription Management', 'Fraud Detection', 'Global Payments'], pricing: 'Commission' },
+    { id: 5, name: 'Slack', category: 'productivity', icon: '💬', rating: 4.6, installs: '80K+', description: 'Communication d\'équipe et intégrations workflow', features: ['Team Chat', 'File Sharing', 'App Integrations', 'Workflow Builder'], pricing: 'Freemium' },
+    { id: 6, name: 'Google Analytics', category: 'analytics', icon: '📊', rating: 4.5, installs: '90K+', description: 'Analytics web complet avec insights avancés', features: ['Web Analytics', 'Real-time Data', 'Custom Reports', 'Goal Tracking'], pricing: 'Gratuit' }
+  ];
+
+  const filteredIntegrations = integrations.filter(integration => {
+    const matchesSearch = integration.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         integration.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || integration.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const IntegrationCard = ({ integration }) => (
+    <div 
+      className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-cyan-400 transition-all duration-200 cursor-pointer hover-lift"
+      onClick={() => setSelectedIntegration(integration)}
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-600 rounded-xl flex items-center justify-center text-2xl">
+            {integration.icon}
+          </div>
+          <div>
+            <h3 className="text-white font-semibold text-lg">{integration.name}</h3>
+            <div className="flex items-center space-x-2 mt-1">
+              <StarIcon className="w-4 h-4 text-yellow-400" />
+              <span className="text-gray-400 text-sm">{integration.rating}</span>
+              <span className="text-gray-500">•</span>
+              <span className="text-gray-400 text-sm">{integration.installs}</span>
+            </div>
+          </div>
+        </div>
+        <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+          integration.pricing === 'Gratuit' ? 'bg-green-500/20 text-green-400' :
+          integration.pricing === 'Freemium' ? 'bg-blue-500/20 text-blue-400' :
+          'bg-orange-500/20 text-orange-400'
+        }`}>
+          {integration.pricing}
+        </div>
+      </div>
+      
+      <p className="text-gray-300 text-sm mb-4 line-clamp-2">{integration.description}</p>
+      
+      <div className="flex flex-wrap gap-2 mb-4">
+        {integration.features.slice(0, 3).map((feature, index) => (
+          <span key={index} className="px-2 py-1 bg-gray-800 text-gray-300 rounded-md text-xs">
+            {feature}
+          </span>
+        ))}
+        {integration.features.length > 3 && (
+          <span className="px-2 py-1 bg-gray-800 text-gray-400 rounded-md text-xs">
+            +{integration.features.length - 3} more
+          </span>
+        )}
+      </div>
+      
+      <button className="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 font-medium">
+        Connecter
+      </button>
+    </div>
+  );
+
+  return (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h1 className="text-4xl font-light text-white mb-4">
+          Marketplace <span className="text-cyan-400">Intégrations</span>
+        </h1>
+        <p className="text-gray-400 text-lg">
+          Découvrez et connectez plus de 200 outils professionnels
+        </p>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="relative flex-1 max-w-md">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Rechercher une intégration..."
+            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none"
+          />
+          <SearchIcon className="absolute right-3 top-3.5 w-5 h-5 text-gray-400" />
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`px-4 py-2 rounded-full border transition-all duration-200 ${
+                selectedCategory === category.id
+                  ? 'bg-cyan-400 text-black border-cyan-400'
+                  : 'bg-gray-900 text-gray-300 border-gray-700 hover:border-cyan-400'
+              }`}
+            >
+              {category.name} ({category.count})
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredIntegrations.map((integration) => (
+          <IntegrationCard key={integration.id} integration={integration} />
+        ))}
+      </div>
+
+      {selectedIntegration && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-gray-700 to-gray-600 rounded-xl flex items-center justify-center text-3xl">
+                    {selectedIntegration.icon}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-semibold text-white">{selectedIntegration.name}</h2>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <StarIcon className="w-4 h-4 text-yellow-400" />
+                      <span className="text-gray-400">{selectedIntegration.rating}</span>
+                      <span className="text-gray-500">•</span>
+                      <span className="text-gray-400">{selectedIntegration.installs}</span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedIntegration(null)}
+                  className="text-gray-400 hover:text-white p-2"
+                >
+                  <CloseIcon />
+                </button>
+              </div>
+
+              <p className="text-gray-300 mb-6">{selectedIntegration.description}</p>
+
+              <div className="mb-6">
+                <h3 className="text-white font-semibold mb-3">Fonctionnalités</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {selectedIntegration.features.map((feature, index) => (
+                    <div key={index} className="flex items-center space-x-2 p-3 bg-gray-800 rounded-lg">
+                      <CheckIcon className="w-4 h-4 text-cyan-400" />
+                      <span className="text-gray-300">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 font-medium">
+                  Connecter maintenant
+                </button>
+                <button className="px-6 py-3 border border-gray-700 text-gray-300 rounded-xl hover:border-cyan-400 transition-all duration-200">
+                  Documentation
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// WorkflowBuilder Component (keep existing)
+export const WorkflowBuilder = () => {
+  const [workflows, setWorkflows] = useState([]);
+  const [selectedWorkflow, setSelectedWorkflow] = useState(null);
+  const [isCreating, setIsCreating] = useState(false);
+
+  const workflowTemplates = [
+    {
+      id: 1,
+      name: 'Lead to Customer',
+      description: 'Automatiser le processus de conversion lead vers client',
+      category: 'Sales',
+      steps: 5,
+      integrations: ['Salesforce', 'HubSpot', 'Slack'],
+      icon: '🎯'
+    },
+    {
+      id: 2,
+      name: 'E-commerce Order Processing',
+      description: 'Traitement automatique des commandes e-commerce',
+      category: 'E-commerce',
+      steps: 7,
+      integrations: ['Shopify', 'Stripe', 'Google Sheets'],
+      icon: '🛍️'
+    },
+    {
+      id: 3,
+      name: 'Marketing Campaign',
+      description: 'Campagne marketing automatisée multi-canal',
+      category: 'Marketing',
+      steps: 6,
+      integrations: ['Mailchimp', 'Facebook Ads', 'Google Analytics'],
+      icon: '📊'
+    },
+    {
+      id: 4,
+      name: 'Customer Support',
+      description: 'Support client automatisé avec escalade',
+      category: 'Support',
+      steps: 4,
+      integrations: ['Zendesk', 'Slack', 'Gmail'],
+      icon: '🎧'
+    }
+  ];
+
+  const WorkflowCard = ({ workflow }) => (
+    <div 
+      className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-cyan-400 transition-all duration-200 cursor-pointer hover-lift"
+      onClick={() => setSelectedWorkflow(workflow)}
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-600 rounded-xl flex items-center justify-center text-2xl">
+            {workflow.icon}
+          </div>
+          <div>
+            <h3 className="text-white font-semibold text-lg">{workflow.name}</h3>
+            <span className="text-cyan-400 text-sm">{workflow.category}</span>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-gray-400 text-sm">{workflow.steps} étapes</div>
+        </div>
+      </div>
+      
+      <p className="text-gray-300 text-sm mb-4">{workflow.description}</p>
+      
+      <div className="flex flex-wrap gap-2 mb-4">
+        {workflow.integrations.map((integration, index) => (
+          <span key={index} className="px-2 py-1 bg-gray-800 text-gray-300 rounded-md text-xs">
+            {integration}
+          </span>
+        ))}
+      </div>
+      
+      <button className="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 font-medium">
+        Utiliser ce template
+      </button>
+    </div>
+  );
+
+  const WorkflowCanvas = ({ workflow }) => (
+    <div className="bg-gray-900 border border-gray-700 rounded-xl p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-white font-semibold text-xl">{workflow.name}</h3>
+        <button
+          onClick={() => setSelectedWorkflow(null)}
+          className="text-gray-400 hover:text-white p-2"
+        >
+          <CloseIcon />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="bg-gray-800 rounded-lg p-4 flex flex-col items-center">
+          <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mb-2">
+            1
+          </div>
+          <span className="text-gray-300 text-sm text-center">Trigger</span>
+          <span className="text-gray-400 text-xs text-center mt-1">Nouveau lead</span>
+        </div>
+
+        <div className="hidden md:flex items-center justify-center">
+          <div className="w-8 h-0.5 bg-gray-600"></div>
+          <div className="w-2 h-2 bg-gray-600 rounded-full ml-2"></div>
+        </div>
+
+        <div className="bg-gray-800 rounded-lg p-4 flex flex-col items-center">
+          <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mb-2">
+            2
+          </div>
+          <span className="text-gray-300 text-sm text-center">Action</span>
+          <span className="text-gray-400 text-xs text-center mt-1">Créer contact</span>
+        </div>
+
+        <div className="hidden md:flex items-center justify-center">
+          <div className="w-8 h-0.5 bg-gray-600"></div>
+          <div className="w-2 h-2 bg-gray-600 rounded-full ml-2"></div>
+        </div>
+
+        <div className="bg-gray-800 rounded-lg p-4 flex flex-col items-center">
+          <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mb-2">
+            3
+          </div>
+          <span className="text-gray-300 text-sm text-center">Notification</span>
+          <span className="text-gray-400 text-xs text-center mt-1">Slack alert</span>
+        </div>
+      </div>
+
+      <div className="mt-6 flex justify-center">
+        <button className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 font-medium">
+          Activer ce workflow
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h1 className="text-4xl font-light text-white mb-4">
+          Builder <span className="text-cyan-400">Workflows</span>
+        </h1>
+        <p className="text-gray-400 text-lg">
+          Créez et gérez vos automatisations en quelques clics
+        </p>
+      </div>
+
+      {selectedWorkflow ? (
+        <WorkflowCanvas workflow={selectedWorkflow} />
+      ) : (
+        <>
+          <div className="flex justify-between items-center">
+            <div className="flex space-x-4">
+              <button
+                onClick={() => setIsCreating(true)}
+                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 font-medium"
+              >
+                + Créer un workflow
+              </button>
+              <button className="px-6 py-3 border border-gray-700 text-gray-300 rounded-xl hover:border-cyan-400 transition-all duration-200">
+                Mes workflows
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-light text-white mb-6">Templates populaires</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {workflowTemplates.map((workflow) => (
+                <WorkflowCard key={workflow.id} workflow={workflow} />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+// AI Response Component (enhanced)
+export const AIResponse = ({ response, isLoading }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (response) {
+      setIsVisible(true);
+    }
+  }, [response]);
+
+  if (!response && !isLoading) return null;
+
+  return (
+    <div className={`w-full max-w-6xl mx-auto mt-8 transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-8 shadow-2xl">
+        <div className="space-y-6">
+          <div className="flex items-center space-x-4 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center animate-pulse">
+              <span className="text-black font-bold">N</span>
+            </div>
+            <div>
+              <span className="text-white font-medium text-lg">Nexus AI</span>
+              <p className="text-gray-400 text-sm">Orchestrateur IA • BotIntegrate</p>
+            </div>
+          </div>
+          
+          {isLoading ? (
+            <div className="flex items-center space-x-3">
+              <div className="flex space-x-1">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce animation-delay-200"></div>
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce animation-delay-400"></div>
+              </div>
+              <span className="text-gray-400">Nexus orchestre vos tâches...</span>
+            </div>
+          ) : (
+            <>
+              <div className="prose prose-invert max-w-none">
+                <p className="text-gray-300 leading-relaxed text-lg font-light">
+                  {response.answer}
+                </p>
+              </div>
+
+              {response.integrations && response.integrations.length > 0 && (
+                <div className="mt-8">
+                  <h4 className="text-cyan-400 font-medium mb-4">Intégrations sélectionnées</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {response.integrations.map((integration, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-800 border border-gray-700 rounded-xl hover:border-cyan-400 transition-all duration-200 hover-lift"
+                      >
+                        <div className="flex items-center space-x-3 mb-2">
+                          <span className="text-lg">{integration.icon}</span>
+                          <span className="text-white font-medium">{integration.name}</span>
+                        </div>
+                        <p className="text-gray-400 text-sm">{integration.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {response.actions && response.actions.length > 0 && (
+                <div className="mt-8">
+                  <h4 className="text-cyan-400 font-medium mb-4">Orchestration planifiée</h4>
+                  <div className="space-y-3">
+                    {response.actions.map((action, index) => (
+                      <button
+                        key={index}
+                        className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl hover:border-cyan-400 hover:bg-gray-700 transition-all duration-200 text-left hover-lift"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className="text-cyan-400">{action.icon}</span>
+                          <span className="text-white font-medium">{action.title}</span>
+                        </div>
+                        <p className="text-gray-400 text-sm mt-2">{action.description}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Footer Component (enhanced)
+export const Footer = () => {
+  return (
+    <footer className="mt-20 bg-black border-t border-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center mr-3">
+                <span className="text-black font-bold text-sm">N</span>
+              </div>
+              <span className="text-xl font-light text-white">
+                nexus<span className="text-cyan-400 font-normal">lite</span>
+              </span>
+            </div>
+            <p className="text-gray-400 text-sm font-light">
+              Orchestrateur IA pour automatiser vos tâches complexes avec plus de 200 intégrations.
+            </p>
+          </div>
+          
+          <div>
+            <h4 className="text-white font-medium mb-4">Produit</h4>
+            <ul className="space-y-2 text-gray-400 text-sm">
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Orchestration</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Intégrations</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">API</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Documentation</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="text-white font-medium mb-4">Entreprise</h4>
+            <ul className="space-y-2 text-gray-400 text-sm">
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Solutions</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Sécurité</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Support</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Tarifs</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="text-white font-medium mb-4">BotIntegrate</h4>
+            <ul className="space-y-2 text-gray-400 text-sm">
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">À propos</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Contact</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Carrières</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Blog</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-gray-400 text-sm">
+            © 2025 BotIntegrate. Tous droits réservés.
+          </p>
+          <div className="flex space-x-6 mt-4 md:mt-0">
+            <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors">
+              Confidentialité
+            </a>
+            <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors">
+              Conditions
+            </a>
+            <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors">
+              Cookies
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
